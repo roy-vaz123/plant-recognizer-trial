@@ -1,4 +1,18 @@
-1)run train_model.py only once (in theory):
+1) orgenize  houseplants_data DB: divide data to trainig and validation
+	Training Data (train):
+		Purpose: The model learns from this dataset by adjusting its weights.
+		Process:
+		The model takes input images, processes them through multiple layers, and predicts output (e.g., plant species).
+		The loss function calculates the error between the prediction and the actual label.
+		The optimizer updates the weights based on the loss to improve accuracy.
+		Size: Typically 70-80% of the total dataset.
+	Validation Data (val):
+		Purpose: Used to evaluate model performance on unseen data during training.
+		Why? The model should generalize well to new data. If it only performs well on train but poorly on val, it is likely overfitting.
+		No Weight Updates: The model does not learn from this dataset—weights are not updated.
+		Size: Usually 10-20% of the dataset.
+
+2)run train_model.py only once (in theory):
 	will use houseplants_data (need to be filled according to format with classified plant pictures)
 	to fine tune a pre trained image classify deep learning model (using pytorch model: resnet50, maybe change for a smaller one)
   training performance:
@@ -22,5 +36,7 @@
 	16		20-45 minutes
 	8		30-60 minutes
 
-2)run classify image:
+
+
+3)run classify image:
 	prints to console the image and class (plant type) of every image
