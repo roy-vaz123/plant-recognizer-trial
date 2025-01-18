@@ -5,7 +5,7 @@ from torchvision import datasets, models, transforms
 import os
 
 
-# 1. Device configuration ??????????????????
+# check if gpu is available for faster calculations
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # transform the images: crop, flip, stretch ... to get better training
@@ -45,7 +45,7 @@ dataloaders = {
     for x in ['train', 'val']
 }
 
-# save the size of each dataset for reference (e.g. for computing accuracy)??????????
+# save the size of each dataset, will be used for computing accuracy
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
 # classes to classify the images to 
@@ -76,7 +76,7 @@ for name, param in model.named_parameters():
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, num_classes)
 
-# Move model to the GPU if available (maybe for better performance????????????????????????????)
+# move model to the GPU if available for faster calculations
 model = model.to(device)
 
 
@@ -85,13 +85,14 @@ model = model.to(device)
 # it measures the difference between the model’s predicted probability distribution and the true distribution 
 criterion = nn.CrossEntropyLoss()
 
-# we dont want to train the whole network so wellonly train layers where: `requires_grad=True` (unfreezed layers)
-# this optimizer use gradient of the loss function to find the direction of the error and how much to adjust each parameter of your model to minimize that loss.
-# update model paramrter by subtracting the gradient of the loss function * lr
+# we dont want to train the whole network so well only train layers where: `requires_grad=True` (unfreezed layers)
+# this optimizer use gradient of the loss function in respect to the weights, to find the direction of the error 
+# and how much to adjust each layer connection weight of the model, to minimize that loss.
+# update weight by subtracting the gradient of the loss function * lr
 optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=0.001, momentum=0.9)
 
 # after step_size number of ephocs, reduce learning rate (lr) by *gamma, allows subtler changes as the learning advances to help the network converge more smoothly 
-# really needed ????????????????????????
+# is it really needed ????????????????????????
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
 # training function
@@ -108,6 +109,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=10):
             else:
                 model.eval()   # set model to evaluate mode
             
+            # reset statistics
             running_loss = 0.0
             running_corrects = 0
             
@@ -119,18 +121,18 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=10):
                 # resets the gradients from the previous batches
                 optimizer.zero_grad()
                 
-                # forward pass, calculate gradient only if in the train phase
+                # forward pass on layers, calculate gradient only if in the train phase
                 with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs)
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
+                    outputs = model(inputs) # get p for each class
+                    _, preds = torch.max(outputs, 1) # the prediction is the class with the highest p
+                    loss = criterion(outputs, labels) # calculate loss function using classifications 
 
                     # backprop (update gradient) only if in training phase
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
 
-                # track the loss & accuracy for statistics and tracking
+                # track the loss  add accuracy for statistics and tracking
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
             

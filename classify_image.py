@@ -46,11 +46,11 @@ def predict_image(model, image_path, transform):
 
 # test images from folder (change to your folder or single image)
 test_folder = 'test_images'
-
 for filename in os.listdir(test_folder):
-    if filename.lower().endswith(('.jpg', '.png', '.jpeg')):
-        full_path = os.path.join(test_folder, filename)
-        pred_idx, outputs = predict_image(model, full_path, inference_transform)
-        pred_class = class_names[pred_idx]
-        print(f"Image: {filename} => Predicted: {pred_class}")
+    full_path = os.path.join(test_folder, filename) # get file
+    # classify image and print class
+    pred_idx, outputs = predict_image(model, full_path, inference_transform) 
+    pred_class = class_names[pred_idx]
+    print(f"Image: {filename} => Predicted: {pred_class}")
+    print()
 
