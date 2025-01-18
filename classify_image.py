@@ -9,8 +9,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # number of our classes (plants in our db)
-num_classes = 1
-class_names = ['plant1 name'] # class names in the same order as training  
+num_classes = 2
+class_names = ['snake_plant', 'ZZ_plant'] # class names in the same order as training  
 
 # build the same ResNet50 architecture used in training
 model = models.resnet50(pretrained=False)
